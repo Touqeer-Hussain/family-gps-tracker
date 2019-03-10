@@ -7,19 +7,22 @@ import MyCircle from '../screen/home/front/myCircle/Mycircle'
 import OtherCircle from '../screen/home/front/otherCircle/Othercircle'
 
 import Create from '../screen/home/create/Create'
+import Profile from '../screen/home/profile/Profile'
 import CodeScreen from '../screen/home/codescreen/Codescreen'
 
 import Detailedcircle from '../screen/home/front/detailedcircle/Detailedcircle'
 import Track from '../screen/home/front/track/Track'
 
-const CircleNavigator = createMaterialTopTabNavigator({
-    Detailedcircle,
-    Track
-}, {
-    navigationOptions: {
-        title: 'Circle'
-    }
-})
+import firebase from '../../Config/firebase'
+
+// const CircleNavigator = createMaterialTopTabNavigator({
+//     Detailedcircle,
+//     Track
+// }, {
+//     navigationOptions: {
+//         title: 'Circle'
+//     }
+// })
 
 const TopNavigator = createMaterialTopTabNavigator({
     MyCircle,
@@ -27,19 +30,27 @@ const TopNavigator = createMaterialTopTabNavigator({
 })
 
 const TabNavigator = createBottomTabNavigator({
-    TopNavigator,
+    TopNavigator: {
+        screen: TopNavigator,
+        navigationOptions: {
+            title: 'Circles'
+        }
+    },
     Create: {
         screen: Create,
-        title: 'Create Circle'
-    },   
-},{
-    navigationOptions: {
-        title: 'Home'
+    },
+    Profile: {
+        screen: Profile
     }
 })
 
 const MainStackNavigation = createAppContainer(createStackNavigator({
-    TabNavigator,
+    TabNavigator: {
+        screen: TabNavigator,
+        navigationOptions: {
+            title: 'Home'
+        }
+    },
     Login,
     CodeScreen:{
         screen: CodeScreen,
@@ -48,11 +59,12 @@ const MainStackNavigation = createAppContainer(createStackNavigator({
         }
         
     },
-    CircleNavigator
+    Detailedcircle,
+    Track
 
 
 },{
-    initialRouteName: 'TabNavigator'
+    initialRouteName: firebase.auth().currentUser ? 'TabNavigator' : 'Login'
 }
 ))
 

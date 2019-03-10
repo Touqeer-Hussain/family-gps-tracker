@@ -36,9 +36,7 @@ class OtherCircle  extends Component {
   this.willFocusListener = this.props.navigation.addListener(
     'didFocus',
     () => {
-      this.setState({
-        usr: []
-      })
+      this.state.usr.length = 0;
       this.getProfile()
     }
   )
@@ -103,7 +101,10 @@ let profile = await JSON.parse(ss)
         key={i}
         bottomDivider={true}
         title={l[Object.keys(l)[0]].name}
-        // subtitle={`Job Type: ` + l[Object.keys(l)[0]].jobType +  `\n` + 'Status: ' + l[Object.keys(l)[0]].status}
+        leftAvatar={
+          <Avatar source={require('../../../../../assets/group.jpg')} />
+          
+        }
         onPress= {() => {
           
           this.props.navigation.navigate('Detailedcircle',{

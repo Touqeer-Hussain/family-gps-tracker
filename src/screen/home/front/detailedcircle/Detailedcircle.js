@@ -154,6 +154,20 @@ componentWillUnmount() {
             }}
           title="Add Member"
           />}
+          {this.state.done && <Button
+          onPress={(e) => {
+            this.props.navigation.navigate('Track', {
+                circle: {
+                  cId: this.state.profile.uid,
+                  name: this.state.circleData.name,
+                  code: this.state.circleData.code,
+      
+                },
+                members: this.state.usr.map(l => Object.keys(l)[0])
+              })
+            }}
+          title="Tracker"
+          />}
           <Button buttonStyle={{backgroundColor: 'red'}}
           onPress={(e) => {
             this.state.panicList.map((l, i) => {
@@ -161,7 +175,7 @@ componentWillUnmount() {
                 if(this.state.profile.uid){    
                     firebase.database().ref(`users/${l}`).once('value' , snap => {
                             
-                        if(snap.val().token){
+                        if(snap.val().token && snap.val().uid != this.state.profile.uid){
                             fetch('https://exp.host/--/api/v2/push/send', {
                                 mode: 'no-cors',
                                 method: 'POST',

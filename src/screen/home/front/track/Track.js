@@ -42,7 +42,9 @@ class Track extends React.Component {
       },
       usr: [],
       done: null,
-      profile: {}
+      profile: {},
+      circle: {},
+      members: []
     };
   }
 
@@ -71,15 +73,49 @@ class Track extends React.Component {
 
  async componentDidMount(){
     //  this._getLocationAsync()
-     this.getProfile()
-  
+
+     this.willFocusListener = this.props.navigation.addListener(
+        'didFocus',
+        () => {
+          this.state.usr.length = 0,
+          this.setState({
+            a: {
+              latitude: LATITUDE + SPACE,
+              longitude: LONGITUDE + SPACE,
+            },
+            usr: [],
+            done: null,
+            profile: {}
+          })
+          this.getProfile()
+        }
+      )
+    }
+      
+
+
+
+
+
+
+componentWillUnmount() {
+  this.willFocusListener.remove()
 }
+
+
+
+
+
+
 
   getProfile = async () => {
       let ss = await AsyncStorage.getItem('profile')
       let profile = await JSON.parse(ss)
-      console.log('profile agaya', profile)
-      this.setState({profile})
+      let circle = this.props.navigation.getParam('circle')
+      let members = this.props.navigation.getParam('members')
+      
+      this.setState({profile, members, circle})
+      
 
 
       
@@ -87,10 +123,13 @@ class Track extends React.Component {
 
 
    this.setState({profile}, async () => {
+       this.state.members.map((l, i) => {
+
+       })
        firebase.database().ref(`users`).on('child_added', snap => {
            
             
-                if(snap.val() && snap.val().uid != profile.uid){
+                if(snap.val() && snap.val().uid != profile.uid && this.state.members.includes(snap.val().uid)){
                     this.state.usr.push({[snap.key]: snap.val()})
                     console.log(this.state.usr)
                     this.setState({
@@ -102,7 +141,7 @@ class Track extends React.Component {
        firebase.database().ref(`users`).on('child_changed', snap => {
            
             
-                if(snap.val() && snap.val().uid != profile.uid){
+                if(snap.val() && snap.val().uid != profile.uid && this.state.members.includes(snap.val().uid)){
                     this.state.usr.length = 0
                     this.state.usr.push({[snap.key]: snap.val()})
                     console.log(this.state.usr)
@@ -206,18 +245,6 @@ class Track extends React.Component {
         }
           
         </MapView></View>
-        <View  >
-        <Button
-          onPress={() => {
-    firebase.database().ref(`users/${this.state.profile.uid}/`).update({
-        coords: this.state.a,
-        init: 0
-   })
-   this.props.navigation.replace('Menu')
-            }}
-          title="Next"
-          />
-        </View>
       </View>
 
     );
